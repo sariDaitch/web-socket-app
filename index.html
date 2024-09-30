@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שנת פריחת השוק - רעיונות תשפ"ה</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #ideas { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>ברוכים הבאים לשנת פריחת השוק!</h1>
+    <input type="text" id="inputIdea" placeholder="הכנס את ראשי התיבות שלך">
+    <button id="submitIdea">שלח</button>
+
+    <div id="ideas">
+        <h2>רעיונות של משתתפים:</h2>
+        <ul id="ideasList"></ul>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:3000');
+        const inputIdea = document.getElementById('inputIdea');
+        const ideasList = document.getElementById('ideasList');
+
+        ws.onmessage = (event) => {
+            const ideas = JSON.parse(event.data);
+            ideasList.innerHTML = ''; 
+            ideas.forEach(idea => {
+                const li = document.createElement('li');
+                li.textContent = idea;
+                ideasList.appendChild(li);
+            });
+        };
+
+        document.getElementById('submitIdea').onclick = () => {
+            const idea = inputIdea.value.trim();
+            if (idea) {
+                ws.send(idea);
+                inputIdea.value = '';
+            }
+        };
+    </script>
+</body>
+</html>
